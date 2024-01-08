@@ -1,0 +1,9 @@
+.search-bar input {
+    padding: 10px;
+    margin-right: 10px;
+    width: 200px;
+}
+
+.search-bar button {
+    padding: 10px;
+}

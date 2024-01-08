@@ -9,9 +9,14 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@vercel/postgres": "^0.5.1",
+    "dotenv": "^16.3.1",
+    "next": "14.0.4",
+    "only-server": "^0.0.1",
     "react": "^18",
     "react-dom": "^18",
-    "next": "14.0.4"
+    "use-debounce": "^10.0.0",
+    "vercel": "^33.0.2"
   },
   "devDependencies": {
     "eslint": "^8",
