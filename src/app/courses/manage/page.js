@@ -10,7 +10,7 @@ function CourseManager() {
   const [showForm, setShowForm] = useState(false);
   const [currentCourse, setCurrentCourse] = useState(null);
 
-  const handleActionWithParams=handleAction.bind(null,currentCourse)
+  const handleActionWithParams=handleAction.bind(null,{instructorId:1,currentCourse})
   useEffect(()=>{
     getCourses().then(courses=>setCourses(courses))
   },[])
@@ -58,16 +58,13 @@ function CourseManager() {
     getCategories().then(categories=>setCategories(categories))
   },[])
 
-  console.log('====================================');
-  console.log(categories);
-  console.log('====================================');
   return (
     <div className={styles.formContainer}>
-      <form   action={dispatch} className={styles.form}>
+      <form action={dispatch} className={styles.form}>
         <label>Category</label>
         <select
-          name="Categoryid"
-          defaultValue={course?.Categoryid}
+          name="CategoryId"
+          defaultValue={course?.CategoryId}
           required
         >
           {categories?.map(category=><option  key={category.id} value={category.id}>{category.name}</option>)}
@@ -87,7 +84,7 @@ function CourseManager() {
           required
         />
           <label>Image</label>
-      <input type='file' name="image_url"/>
+      <input type='hidden' name="image_url" defaultValue={'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9bLg1NQ7hxBmxr6mbk1fkQGv-a6f8QskCSmZlTK-3fg&s'}/>
         <button type="submit" className={styles.submitButton}>Submit</button>
         <button onClick={onClose} className={styles.closeButton}>Close</button>
       </form>

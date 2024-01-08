@@ -1,9 +1,10 @@
 'use server'
 
 import { sql } from "@vercel/postgres";
+import { revalidatePath } from "next/cache";
 
 export const getCourses=async()=>{
-    const query=await sql`SELECT * FROM courses`;
+    const query=await sql`select * from courses`;
     const data=query.rows
     return data;
 }
@@ -16,34 +17,34 @@ export const getCategories=async()=>{
 
 
 
-export const handleAction = async (course, formData) => {
+export const handleAction = async (details, formData) => {
+  const {currentCourse:course,instructorId}=details
   const formDataObj = Object.fromEntries(formData.entries());
-  console.log('====================================');
-  console.log(formDataObj,course);
-  console.log('====================================');
+console.log(course);
   if (course) {
     // Update existing course
     await sql`
       UPDATE courses 
       SET 
-        Title = ${formData.Title}, 
-        Description = ${formData.Description}, 
-        Image_url = ${formData.Image_url}, 
-        Instructorid = ${formData.Instructorid}, 
+        Title = ${formDataObj.Title}, 
+        Description = ${formDataObj.Description}, 
+        Image_url = ${formDataObj.image_url}, 
+        Instructorid = ${instructorId}, 
         Updatedat = NOW(), 
-        Categoryid = ${formData.Categoryid}, 
-        Labels = ${formData.Labels} 
+        Categoryid = ${formDataObj.CategoryId}, 
       WHERE Id = ${course.id}
     `;
   } else {
     // Insert new course
     await sql`
       INSERT INTO courses 
-        (Title, Description, Image_url, Instructorid, Createdat, Updatedat, Categoryid, Labels) 
+        (Title, Description, Image_url, Instructorid, Createdat, Updatedat, Categoryid) 
       VALUES 
-        (${formData.Title}, ${formData.Description}, ${formData.Image_url}, ${formData.Instructorid}, NOW(), NOW(), ${formData.Categoryid}, ${formData.Labels})
+        (${formDataObj.Title}, ${formDataObj.Description}, ${formDataObj.image_url}, ${instructorId}, NOW(), NOW(), ${formDataObj.CategoryId})
     `;
   }
+  revalidatePath('/courses')
+  revalidatePath('/courses/manage')
 };
 export const getSomething=async()=>{
     console.log(process.env.POSTGRES_URL);
