@@ -1,21 +1,20 @@
 'use client'
 import React, { useEffect, useState } from 'react';
+import {useFormState} from 'react-dom'
 import styles from './CourseManager.module.css'; // Ensure this CSS module is created
-import { getCourses, getSomething } from '@/lib/data';
+import { getCategories, getCourses, getSomething, handleAction } from '@/lib/data';
 
 
 function CourseManager() {
-  const [courses, setCourses] = useState([
-    { id: 1, title: 'Intro to Programming', description: 'Learn the basics of programming.' },
-    { id: 2, title: 'Web Development', description: 'Dive into web development.' },
-    // Add more courses as needed
-  ]);
+  const [courses, setCourses] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [currentCourse, setCurrentCourse] = useState(null);
 
+  const handleActionWithParams=handleAction.bind(null,currentCourse)
   useEffect(()=>{
-    getSomething().then(courses=>courses)
+    getCourses().then(courses=>setCourses(courses))
   },[])
+
   const handleAddEdit = (course) => {
     setCurrentCourse(course);
     setShowForm(true);
@@ -32,6 +31,8 @@ function CourseManager() {
     // Example: setCourses(courses.filter(course => course.id !== courseId));
   };
 
+
+
   return (
     <div className={styles.container}>
       <h1>Course Management</h1>
@@ -46,45 +47,47 @@ function CourseManager() {
         </li>
       ))}
       </ul>
-      {showForm && <CourseForm course={currentCourse} onClose={handleCloseForm} />}
+      {showForm && <CourseForm dispatch={handleActionWithParams} course={currentCourse} onClose={handleCloseForm} />}
     </div>
   );
 }
 
-function CourseForm({ course, onClose }) {
-  const [formData, setFormData] = useState(course || { title: '', description: '' });
+ function CourseForm({ course,onClose,dispatch }) {
+  const [categories,setCategories]=useState([]);
+    useEffect(()=>{
+    getCategories().then(categories=>setCategories(categories))
+  },[])
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Form Data:', formData);
-    // Submit logic here
-    onClose(); // Close the form after submission
-  };
-
+  console.log('====================================');
+  console.log(categories);
+  console.log('====================================');
   return (
     <div className={styles.formContainer}>
-      <form onSubmit={handleSubmit} className={styles.form}>
+      <form   action={dispatch} className={styles.form}>
+        <label>Category</label>
+        <select
+          name="Categoryid"
+          defaultValue={course?.Categoryid}
+          required
+        >
+          {categories?.map(category=><option  key={category.id} value={category.id}>{category.name}</option>)}
+        </select>
         <label>Title</label>
         <input
           type="text"
-          name="title"
-          value={formData.title}
-          onChange={handleChange}
+          name="Title"
+          defaultValue={course?.title}
           required
         />
 
         <label>Description</label>
         <textarea
-          name="description"
-          value={formData.description}
-          onChange={handleChange}
+          name="Description"
+          defaultValue={course?.description}
           required
         />
-
+          <label>Image</label>
+      <input type='file' name="image_url"/>
         <button type="submit" className={styles.submitButton}>Submit</button>
         <button onClick={onClose} className={styles.closeButton}>Close</button>
       </form>
