@@ -5,7 +5,6 @@ import Link from 'next/link';
 
 async function Courses() {
   const courses = await getCourses();
-
   return (
     <div className={styles.coursesContainer}>
       {courses.map(course => (
